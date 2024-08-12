@@ -17,7 +17,7 @@ export const Site = ({ title, description, IMGs }: Props) => {
     imgPrev,
     refDialog,
     optionsKey: {
-      duration: 600,
+      duration: 500,
       iterations: 1,
       easing: 'ease'
     }
@@ -35,9 +35,11 @@ export const Site = ({ title, description, IMGs }: Props) => {
             <picture>
               <img ref={imgNew} class="img-new" src={IMGs[0]} alt="example" />
             </picture>
-            <h3>{title}</h3>
+            <div class='container-info'>
+              <h3>{title}</h3>
 
-            <p>{description}</p>
+              <p>{description}</p>
+            </div>
           </article>
         </dialog>
       )}

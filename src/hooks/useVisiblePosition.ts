@@ -22,13 +22,15 @@ export const useVisiblePosition = ({ imgNew, imgPrev, refDialog, optionsKey }: P
       document.startViewTransition(() => {
         refDialog.current?.showModal();
 
+        (imgPrev.current as HTMLImageElement).style.opacity = '0';
+
         const { x, y } = imgNew.current?.getBoundingClientRect() as DOMRect;
 
         const keyFrame = new KeyframeEffect(
           imgNew.current,
           [
-            { transform: `translateY(${-y + yOld}px) translateX(${-x + xOld}px)`, width: '200px', height: '200px', opacity: '0.6' },
-            { transform: `translateY(0px) translateX(0px)`, width: '500px', height: '500px', opacity: '1' }
+            { transform: `translateY(${-y + yOld}px) translateX(${-x + xOld}px)`, width: '150px', height: '150px', opacity: '1' },
+            { transform: `translateY(0px) translateX(0px)`, width: '300px', height: '300px', opacity: '1' }
           ],
           optionsKey
         );
@@ -44,6 +46,7 @@ export const useVisiblePosition = ({ imgNew, imgPrev, refDialog, optionsKey }: P
     if (target === refDialog.current) {
       const trans = document.startViewTransition(() => {
         refDialog.current?.close();
+        (imgPrev.current as HTMLImageElement).style.opacity = '1';
       });
 
       await trans.finished;
