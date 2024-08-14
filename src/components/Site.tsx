@@ -35,7 +35,7 @@ export const Site = ({ title, description, IMGs }: Props) => {
             <picture>
               <img ref={imgNew} class="img-new" src={IMGs[0]} alt="example" />
             </picture>
-            <div class='container-info'>
+            <div class="container-info">
               <h3>{title}</h3>
 
               <p>{description}</p>

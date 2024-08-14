@@ -26,18 +26,27 @@ export const useVisiblePosition = ({ imgNew, imgPrev, refDialog, optionsKey }: P
 
         const { x, y } = imgNew.current?.getBoundingClientRect() as DOMRect;
 
-        const keyFrame = new KeyframeEffect(
-          imgNew.current,
-          [
-            { transform: `translateY(${-y + yOld}px) translateX(${-x + xOld}px)`, width: '150px', height: '150px', opacity: '1' },
-            { transform: `translateY(0px) translateX(0px)`, width: '300px', height: '300px', opacity: '1' }
-          ],
-          optionsKey
-        );
+        // const keyFrame = new KeyframeEffect(
+        //   imgNew.current,
+        // [
+        //   { transform: `translateY(${-y + yOld}px) translateX(${-x + xOld}px)`, width: '150px', height: '150px', opacity: '1' },
+        //   { transform: `translateY(0px) translateX(0px)`, width: '300px', height: '300px', opacity: '1' }
+        // ],
+        // optionsKey
+        // );
 
-        const AnimationKey = new Animation(keyFrame);
+        // const AnimationKey = new Animation(keyFrame);
 
-        AnimationKey.play();
+        // AnimationKey.play();
+
+        if (imgNew.current)
+          imgNew.current.animate(
+            [
+              { transform: `translateY(${-y + yOld}px) translateX(${-x + xOld}px)`, width: '150px', height: '150px', opacity: '1' },
+              { transform: `translateY(0px) translateX(0px)`, width: '300px', height: '300px', opacity: '1' }
+            ],
+            optionsKey
+          );
       });
     }
   }, [active]);
