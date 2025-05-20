@@ -12,7 +12,7 @@ export const Site = ({ title, description, IMGs }: Props) => {
   const imgNew = useRef<HTMLImageElement>(null);
   const refDialog = useRef<HTMLDialogElement>(null);
 
-  const { handleSite, active } = useVisiblePosition({
+  const { handleSite, active,handleClose } = useVisiblePosition({
     imgNew,
     imgPrev,
     refDialog,
@@ -31,6 +31,7 @@ export const Site = ({ title, description, IMGs }: Props) => {
       </figure>
       {active && (
         <dialog ref={refDialog} class="modal">
+          <div onClick={handleClose} id="CLOSE_MODAL">X</div>
           <article>
             <picture>
               <img ref={imgNew} class="img-new" src={IMGs[0]} alt="example" />
