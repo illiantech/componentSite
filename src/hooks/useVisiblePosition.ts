@@ -1,14 +1,30 @@
-import { RefObject } from 'preact';
-import { useEffect, useState } from 'preact/hooks';
+import { useEffect, useState } from "preact/hooks";
 
-interface Props {
-  imgPrev: RefObject<HTMLImageElement>;
-  imgNew: RefObject<HTMLImageElement>;
-  refDialog: RefObject<HTMLDialogElement>;
+ const transitionViewIfSupported = (updateCb: () => void) => {
+  if (document.startViewTransition) {
+    return document.startViewTransition(updateCb);
+  } else {
+    updateCb();
+  }
+};
+
+
+ const CLOSE_MODAL = "CLOSE_MODAL";
+
+interface PropsVsiblePosition<T> {
+  refImgPrev: T | null;
+  refImgNew: T | null;
+  refDialog: T | null;
   optionsKey: KeyframeEffectOptions;
 }
 
-export const useVisiblePosition = ({ imgNew, imgPrev, refDialog, optionsKey }: Props) => {
+
+export const useVisiblePosition = <T extends HTMLElement>({
+  refImgNew,
+  refImgPrev,
+  refDialog,
+  optionsKey
+}: PropsVsiblePosition<T>) => {
   const [active, setActive] = useState<boolean>(false);
 
   const handleSite = () => {
@@ -17,47 +33,47 @@ export const useVisiblePosition = ({ imgNew, imgPrev, refDialog, optionsKey }: P
 
   useEffect(() => {
     if (active) {
-      const { x: xOld, y: yOld } = imgPrev.current?.getBoundingClientRect() as DOMRect;
+      const {
+        x: X_OLD,
+        y: Y_OLD,
+        width: W_OLD
+      } = refImgPrev?.getBoundingClientRect() as DOMRect;
 
-      document.startViewTransition(() => {
-        refDialog.current?.showModal();
+      transitionViewIfSupported(() => {
+        document.documentElement.style.overflow = "hidden";
+        document.documentElement.style.marginRight = "16px";
+        (refDialog as unknown as HTMLDialogElement).showModal();
 
-        (imgPrev.current as HTMLImageElement).style.opacity = '0';
+        const { x, y, width } = refImgNew?.getBoundingClientRect() as DOMRect;
 
-        const { x, y } = imgNew.current?.getBoundingClientRect() as DOMRect;
-
-        if (imgNew.current)
-          imgNew.current.animate(
-            [
-              { transform: `translateY(${-y + yOld}px) translateX(${-x + xOld}px)`, width: '150px', height: '150px', opacity: '1' },
-              { transform: `translateY(0px) translateX(0px)`, width: '300px', height: '300px', opacity: '1' }
-            ],
-            optionsKey
-          );
+        refImgNew?.animate(
+          [
+            {
+              transform: `translateY(${-y + Y_OLD}px) translateX(${-x + X_OLD}px)`,
+              width: `${W_OLD}px`,
+              height: `${W_OLD}px`
+            },
+            {
+              transform: `translateY(0px) translateX(0px)`,
+              width: `${width}px`,
+              height: `${width}px`
+            }
+          ],
+          optionsKey
+        );
       });
     }
   }, [active]);
 
-  const closeSite = async ({ target }: Event) => {
-    if (target === refDialog.current) {
-      const trans = document.startViewTransition(() => {
-        refDialog.current?.close();
-        (imgPrev.current as HTMLImageElement).style.opacity = '1';
+  const handleClose = ({ target }: MouseEvent) => {
+    if ((target as HTMLElement).id === CLOSE_MODAL) {
+      transitionViewIfSupported(() => {
+        document.documentElement.style.overflow = "auto";
+        document.documentElement.style.marginRight = "0px";
+        (refDialog.current as unknown as HTMLDialogElement).close();
       });
-
-      await trans.finished;
-
-      setActive(false);
     }
   };
 
-  useEffect(() => {
-    window.addEventListener('click', closeSite);
-
-    return () => {
-      window.removeEventListener('click', closeSite);
-    };
-  }, []);
-
-  return { active, handleSite };
+  return { active, handleSite, setActive, handleClose };
 };
